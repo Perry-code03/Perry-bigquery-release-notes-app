@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Radar</title>
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Track, search, and share the latest BigQuery release notes and updates. Stay up to date with GCP BigQuery features.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- CSS Style Link -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Toast Notification for copies, etc. -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon-wrapper">
+                    <i data-lucide="database" class="logo-icon"></i>
+                    <i data-lucide="zap" class="logo-badge"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery Radar</h1>
+                    <p>Release Notes & Social Composer</p>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button id="btn-refresh" class="btn btn-primary" title="Fetch latest release notes">
+                    <i data-lucide="rotate-cw" id="refresh-icon"></i>
+                    <span>Refresh Feed</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Left Side: Controls & Feed -->
+            <section class="feed-section">
+                <!-- Control Bar: Search & Filters -->
+                <div class="control-panel">
+                    <div class="search-box">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Search update content, tags, or dates..." aria-label="Search release notes">
+                        <button id="btn-clear-search" class="btn-clear" style="display:none;" title="Clear search">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="filter-bar">
+                        <span class="filter-label">Filter:</span>
+                        <div class="filter-chips">
+                            <button class="chip active" data-filter="all">All</button>
+                            <button class="chip" data-filter="feature">Features</button>
+                            <button class="chip" data-filter="change">Changes</button>
+                            <button class="chip" data-filter="deprecation">Deprecations</button>
+                            <button class="chip" data-filter="resolved">Resolved</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feed Status / Info -->
+                <div id="feed-status" class="feed-status">
+                    <span id="update-count">Loading release notes...</span>
+                </div>
+
+                <!-- Feed Scroll Container -->
+                <div class="feed-scroll-container">
+                    <!-- Loading State -->
+                    <div id="loading-state" class="loading-state">
+                        <div class="spinner-wrapper">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                        </div>
+                        <p>Scanning BigQuery feed...</p>
+                    </div>
+
+                    <!-- Error State -->
+                    <div id="error-state" class="error-state" style="display: none;">
+                        <i data-lucide="alert-triangle" class="error-icon"></i>
+                        <h3>Failed to fetch notes</h3>
+                        <p id="error-message">Check your connection or try again.</p>
+                        <button id="btn-retry" class="btn btn-secondary">Retry Fetch</button>
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state" style="display: none;">
+                        <i data-lucide="search-code" class="empty-icon"></i>
+                        <h3>No matches found</h3>
+                        <p>Try refining your search query or filters.</p>
+                    </div>
+
+                    <!-- Timeline Content -->
+                    <div id="timeline" class="timeline" style="display: none;">
+                        <!-- Timeline entries dynamically generated by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Side: Tweet Composer (Sticky Panel) -->
+            <aside class="composer-section">
+                <div class="composer-sticky-card">
+                    <div class="composer-header">
+                        <div class="composer-title">
+                            <i data-lucide="twitter" class="twitter-icon"></i>
+                            <h2>Social Share Craft</h2>
+                        </div>
+                        <span class="composer-badge">X / Twitter</span>
+                    </div>
+
+                    <div id="composer-body" class="composer-body">
+                        <!-- Empty Composer State -->
+                        <div id="composer-empty-state" class="composer-empty-state">
+                            <div class="empty-composer-icon-wrapper">
+                                <i data-lucide="edit-3"></i>
+                            </div>
+                            <h3>Select an Update</h3>
+                            <p>Pick any release note from the feed on the left to start writing and customizing your Tweet.</p>
+                        </div>
+
+                        <!-- Active Composer State -->
+                        <div id="composer-active-state" class="composer-active-state" style="display: none;">
+                            <div class="selected-note-meta">
+                                <div class="meta-row">
+                                    <span class="meta-label">Selected Date:</span>
+                                    <span id="selected-date-text" class="meta-value">June 17, 2026</span>
+                                </div>
+                                <div class="meta-row">
+                                    <span class="meta-label">Update Type:</span>
+                                    <span id="selected-type-badge" class="badge">Feature</span>
+                                </div>
+                            </div>
+
+                            <div class="textarea-wrapper">
+                                <label for="tweet-textarea" class="sr-only">Tweet content</label>
+                                <textarea id="tweet-textarea" placeholder="Craft your update..." maxlength="600" aria-label="Tweet editor"></textarea>
+                                
+                                <div class="composer-quick-actions">
+                                    <button id="btn-reset-tweet" class="btn-text-action" title="Revert to default text">
+                                        <i data-lucide="undo-2"></i>
+                                        <span>Reset text</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="composer-footer">
+                                <div class="char-counter-container">
+                                    <svg class="progress-ring" width="36" height="36">
+                                        <circle class="progress-ring__bg" stroke="#1e293b" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                                        <circle id="progress-circle" class="progress-ring__circle" stroke="#1d9bf0" stroke-width="3" fill="transparent" r="14" cx="18" cy="18"/>
+                                    </svg>
+                                    <span id="char-count-text" class="char-count-text">280</span>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button id="btn-copy-tweet" class="btn btn-secondary" title="Copy tweet content to clipboard">
+                                        <i data-lucide="copy"></i>
+                                        <span>Copy</span>
+                                    </button>
+                                    <button id="btn-post-tweet" class="btn btn-twitter" title="Share on X / Twitter">
+                                        <i data-lucide="external-link"></i>
+                                        <span>Tweet</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- JavaScript Link -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

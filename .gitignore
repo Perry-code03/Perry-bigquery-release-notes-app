@@ -1,0 +1,22 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Scratch scripts & temporary workspace files
+scratch/
+
+# IDE configuration folders
+.vscode/
+.idea/
+
+# OS-specific system files
+.DS_Store
+Thumbs.db
