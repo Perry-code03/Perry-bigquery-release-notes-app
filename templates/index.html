@@ -38,7 +38,11 @@
                 </div>
             </div>
             
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; gap: 0.75rem;">
+                <button id="btn-export" class="btn btn-secondary" title="Export filtered release notes to CSV">
+                    <i data-lucide="download"></i>
+                    <span>Export CSV</span>
+                </button>
                 <button id="btn-refresh" class="btn btn-primary" title="Fetch latest release notes">
                     <i data-lucide="rotate-cw" id="refresh-icon"></i>
                     <span>Refresh Feed</span>

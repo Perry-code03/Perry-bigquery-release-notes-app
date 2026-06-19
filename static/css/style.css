@@ -612,22 +612,54 @@ body {
 /* Card Link/Footer */
 .card-footer {
     display: flex;
-    justify-content: flex-end;
-    margin-top: 0.25rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    padding-top: 0.5rem;
+}
+
+.btn-card-action {
+    background: transparent;
+    border: none;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: var(--transition);
+    font-family: var(--font-body);
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.btn-card-action:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.btn-card-action svg {
+    width: 12px;
+    height: 12px;
 }
 
 .card-link {
     font-size: 0.75rem;
     color: var(--text-muted);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.25rem;
     text-decoration: none;
     transition: var(--transition);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
 }
 
 .card-link:hover {
     color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .card-link svg {

@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnRefresh = document.getElementById('btn-refresh');
     const refreshIcon = document.getElementById('refresh-icon');
     const btnRetry = document.getElementById('btn-retry');
+    const btnExport = document.getElementById('btn-export');
     const searchInput = document.getElementById('search-input');
     const btnClearSearch = document.getElementById('btn-clear-search');
     const filterChips = document.querySelectorAll('.chip');
@@ -256,6 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${note.contentHtml}
                     </div>
                     <div class="card-footer">
+                        <button class="btn-card-action btn-copy-card" title="Copy update content to clipboard">
+                            <i data-lucide="copy"></i>
+                            <span>Copy Card</span>
+                        </button>
                         <a href="${note.link}" target="_blank" rel="noopener noreferrer" class="card-link" title="Open official GCP documentation">
                             <span>Official Docs</span>
                             <i data-lucide="external-link"></i>
@@ -265,9 +270,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Card click event triggers selection
                 card.addEventListener('click', (e) => {
-                    // Prevent trigger if they click links directly
-                    if (e.target.closest('a')) return;
+                    // Prevent trigger if they click links or buttons directly
+                    if (e.target.closest('a') || e.target.closest('button')) return;
                     selectNote(note.id);
+                });
+
+                // Copy Card content clipboard handler
+                const btnCopyCard = card.querySelector('.btn-copy-card');
+                btnCopyCard.addEventListener('click', async (e) => {
+                    e.stopPropagation(); // Prevent card selection toggle
+                    try {
+                        await navigator.clipboard.writeText(note.contentText);
+                        showToast("Card text copied to clipboard!", "success");
+                        
+                        // Temporary visual feedback
+                        const iconEl = btnCopyCard.querySelector('i');
+                        const textEl = btnCopyCard.querySelector('span');
+                        iconEl.setAttribute('data-lucide', 'check');
+                        textEl.textContent = 'Copied!';
+                        lucide.createIcons();
+                        
+                        setTimeout(() => {
+                            iconEl.setAttribute('data-lucide', 'copy');
+                            textEl.textContent = 'Copy Card';
+                            lucide.createIcons();
+                        }, 1500);
+                    } catch (err) {
+                        console.error(err);
+                        showToast("Failed to copy card text.", "error");
+                    }
                 });
                 
                 groupDiv.appendChild(card);
@@ -407,9 +438,70 @@ document.addEventListener('DOMContentLoaded', () => {
         window.open(twitterUrl, '_blank', 'noopener,noreferrer');
     });
 
+    // --- CSV EXPORTER ---
+    function exportToCSV() {
+        const filtered = parsedNotes.filter(note => {
+            const matchesFilter = currentFilter === 'all' || note.filterCategory === currentFilter;
+            const matchesSearch = searchQuery === '' || 
+                note.contentText.toLowerCase().includes(searchQuery) ||
+                note.type.toLowerCase().includes(searchQuery) ||
+                note.date.toLowerCase().includes(searchQuery);
+            return matchesFilter && matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+            showToast("No release notes found to export.", "error");
+            return;
+        }
+
+        const headers = ["Date", "Update Type", "Category", "Content", "Source Link"];
+        const rows = filtered.map(note => [
+            note.date,
+            note.type,
+            note.filterCategory,
+            note.contentText,
+            note.link
+        ]);
+
+        const formatField = field => {
+            const value = (field === null || field === undefined) ? '' : String(field);
+            return `"${value.replace(/"/g, '""')}"`;
+        };
+
+        const csvContent = [
+            headers.map(formatField).join(','),
+            ...rows.map(row => row.map(formatField).join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        
+        let filename = 'bigquery_release_notes';
+        if (currentFilter !== 'all') {
+            filename += `_${currentFilter}`;
+        }
+        if (searchQuery) {
+            filename += `_search`;
+        }
+        filename += '.csv';
+
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast(`Exported ${filtered.length} notes to CSV!`, "success");
+    }
+
     // Refresh control
     btnRefresh.addEventListener('click', fetchReleaseNotes);
     btnRetry.addEventListener('click', fetchReleaseNotes);
+    
+    // Export CSV control
+    btnExport.addEventListener('click', exportToCSV);
 
     // Fuzzy search controller
     searchInput.addEventListener('input', (e) => {
