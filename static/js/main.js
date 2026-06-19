@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const refreshIcon = document.getElementById('refresh-icon');
     const btnRetry = document.getElementById('btn-retry');
     const btnExport = document.getElementById('btn-export');
+    const btnThemeToggle = document.getElementById('btn-theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
     const searchInput = document.getElementById('search-input');
     const btnClearSearch = document.getElementById('btn-clear-search');
     const filterChips = document.querySelectorAll('.chip');
@@ -496,6 +498,32 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast(`Exported ${filtered.length} notes to CSV!`, "success");
     }
 
+    // Theme Toggle Handler
+    function initTheme() {
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeIcon.setAttribute('data-lucide', 'sun');
+        } else {
+            document.body.classList.remove('light-theme');
+            themeIcon.setAttribute('data-lucide', 'moon');
+        }
+    }
+
+    btnThemeToggle.addEventListener('click', () => {
+        const isLight = document.body.classList.toggle('light-theme');
+        if (isLight) {
+            localStorage.setItem('theme', 'light');
+            themeIcon.setAttribute('data-lucide', 'sun');
+            showToast("Switched to Light Mode", "success");
+        } else {
+            localStorage.setItem('theme', 'dark');
+            themeIcon.setAttribute('data-lucide', 'moon');
+            showToast("Switched to Dark Mode", "success");
+        }
+        lucide.createIcons();
+    });
+
     // Refresh control
     btnRefresh.addEventListener('click', fetchReleaseNotes);
     btnRetry.addEventListener('click', fetchReleaseNotes);
@@ -530,5 +558,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- BOOTSTRAP INIT ---
+    initTheme();
     fetchReleaseNotes();
 });

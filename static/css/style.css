@@ -38,6 +38,108 @@
     --font-body: 'Inter', sans-serif;
 }
 
+/* Light Theme Variables & Component Overrides */
+body.light-theme {
+    --bg-main: #f8fafc;
+    --bg-surface: rgba(255, 255, 255, 0.7);
+    --bg-surface-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(0, 0, 0, 0.06);
+    --border-color-active: rgba(79, 70, 229, 0.4);
+    
+    /* Text colors */
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    
+    /* Category Tags Background adjustments for contrast */
+    --color-feature-bg: rgba(16, 185, 129, 0.08);
+    --color-change-bg: rgba(59, 130, 246, 0.08);
+    --color-deprecation-bg: rgba(239, 68, 68, 0.08);
+    --color-resolved-bg: rgba(139, 92, 246, 0.08);
+    --color-other-bg: rgba(236, 72, 153, 0.08);
+}
+
+body.light-theme {
+    background-image: 
+        radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(241, 245, 249, 0.8) 0%, #f1f5f9 100%);
+}
+
+body.light-theme .search-box input {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme .search-box input:focus {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.08);
+}
+
+body.light-theme #tweet-textarea {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-theme #tweet-textarea:focus {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(29, 155, 240, 0.08);
+}
+
+body.light-theme .selected-note-meta {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .composer-header {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+body.light-theme .composer-empty-state .empty-composer-icon-wrapper {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+body.light-theme .progress-ring__bg {
+    stroke: #e2e8f0;
+}
+
+body.light-theme .logo-text h1 {
+    background: linear-gradient(to right, #0f172a, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+body.light-theme .logo-icon-wrapper {
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+}
+
+body.light-theme .chip {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+body.light-theme .chip:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .chip.active {
+    background: rgba(99, 102, 241, 0.08);
+    color: #4f46e5;
+    border-color: rgba(99, 102, 241, 0.25);
+}
+
+body.light-theme .app-header {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+body.light-theme .control-panel,
+body.light-theme .composer-sticky-card,
+body.light-theme .update-card,
+body.light-theme .loading-state,
+body.light-theme .error-state,
+body.light-theme .empty-state {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
 /* Reset and Base Styles */
 * {
     box-sizing: border-box;
